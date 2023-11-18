@@ -19,6 +19,10 @@ export default {
     ]
   },
 
+  publicRuntimeConfig: {
+    encKey: process.env.ENC_KEY
+  },
+
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
   ],

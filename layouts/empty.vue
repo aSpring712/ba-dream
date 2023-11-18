@@ -4,8 +4,9 @@
         <!-- <CommonAlert :alert="alert_pop" @close="alert_pop.state = false">
             <div v-html="alert_pop.content"></div>
         </CommonAlert> -->
-    
-        <Nuxt/>
+        <div style="padding-top: 10%;">
+            <Nuxt/>
+        </div>
     </v-app>
 </template>
 

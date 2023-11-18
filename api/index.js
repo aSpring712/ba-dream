@@ -1,12 +1,7 @@
-// import { server } from "./mock/server";
-
-// // if (process.env.NODE_ENV === "development") {
-//     server.listen();
-// // }
-
 // express
 const express = require('express');
 const bodyParser = require('body-parser');
+const jwt = './js/jwt.js';
 
 // session
 const session = require('express-session');
@@ -27,8 +22,7 @@ app.use(session({
     cookie: { //세션 쿠키 설정 (세션 관리 시 클라이언트에 보내는 쿠키)
         httpOnly: true, // 자바스크립트를 통해 세션 쿠키를 사용할 수 없도록 함
         secure: false,
-        // maxAge: 86400000,
-        maxAge: 31536000000,  // 1년으로 변경
+        maxAge: 86400000,
     }
 }));
 
