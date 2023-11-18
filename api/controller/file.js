@@ -21,8 +21,18 @@ module.exports = {
 
         return res.json( { type: 'SUCCESS'});
     },
+    async moveToTrashcan(req, res) {
+        console.log('파일 휴지통으로 이동', req.params);
+
+        return res.json({type: "SUCCESS"});
+    },
     async allFiles(req, res) {
         console.log('전체 파일 조회');
         return res.json([])
+    },
+    async delFile(req, res) {
+        console.log(req.params.id);
+
+        return res.json({type: "SUCCESS"});
     }
 }

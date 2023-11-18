@@ -19,13 +19,14 @@
                 <div style="height: 50%; background-color: white; width: 100%;">
                     전체 컨텐츠
                     <div style="display: flex; flex-flow: wrap; flex-direction: row;">
-                        <div v-for="file in all_files">
+                        <div v-for="(file, index) in all_files">
                             <img v-if="file.type.startsWith('image')" :src="file.url" style="width: 300px; height: 300px;"/>
-                            <img v-else src="static/vedio_temp.jpg" style="width: 300px; height: 300px;"/>
-                            <div>TYPE {{ file.type.split('/')[0] }}</div>
+                            <!-- <img v-else src="/vedio_temp.jpg" style="width: 300px; height: 300px;"/> -->
+                            <video v-else id="video" :src="file.url" style="width: 300px; height: 300px;"></video>
+                            <div>TYPE {{ file.type.split('/')[0] }} <span style="color: red; cursor: pointer; float: right;" @click="tmpDelConfirm(file, index)">X</span></div>
                             <div>SIZE {{ file.size | fileSize }}</div>
                             <!-- TODO 재생 시간 -->
-                            <div>TIME {{ file.type.startsWith('vedio') ? file.reg_date : "NONE" }}</div>
+                            <div>TIME {{ file.type.startsWith('video') ? file.duration : "NONE" }}</div>
                         </div>
                     </div>
                 </div>
@@ -48,23 +49,30 @@
         data() {
             return {
                 recent_play: [{id: 1}, {id: 2}],
-                files: [],
+                // files: [],
 
-                all_files: [],
+                // all_files: [],
+            }
+        },
+        computed: {
+            all_files() {
+                return this.$store.state.imgAndVedio
             }
         },
         mounted() {
-            // 전체 파일 조회
+            // 전체 파일 조회 -> 초기 데이터 없어서 페이지 이동 시마다 빈값으로 변경됨..
             this.getAllFiles();
         },
         methods: {
             async getAllFiles() {
                 let result = await this.$axios.get('/file/all')
                 if(result.data.type == "SUCCESS") {
-                    this.all_files = result.data.files;
+                    // this.all_files = result.data.files;
+                    this.$store.dispatch('getAllContents', result.data.files);
                 } else {
                     // 파일 조회 실패
-                    this.all_files = [];
+                    // this.all_files = [];
+                    this.$store.dispatch('getAllContents', []);
                 }
             },
             file_upload() {
@@ -105,12 +113,21 @@
                     if(result.data.type == "SUCCESS") {
                         alert('업로드 되었습니다.');
 
-                        this.all_files.push({
+                        this.$store.dispatch('addContent', {
                             url: URL.createObjectURL(new_file),
                             type: new_file.type,
                             size: new_file.size,
                             reg_date: new Date(),
+                            del: false
                         })
+
+                        // this.all_files.push({
+                        //     url: URL.createObjectURL(new_file),
+                        //     type: new_file.type,
+                        //     size: new_file.size,
+                        //     reg_date: new Date(),
+                        // })
+
                         return this.$refs.fileInput.value = '';
                     } else {
                         alert('업로드에 실패했습니다.')
@@ -118,6 +135,12 @@
                 } catch(err) {
                     console.log(err);
                     alert('이미지/영상 업로드에 실패했습니다.')
+                }
+            },
+            // 휴지통으로 이동
+            tmpDelConfirm(file, index) {
+                if(confirm('삭제하시겠습니까?')) {
+                    this.$store.dispatch('tmpDelContent', {file, index});
                 }
             }
         }
