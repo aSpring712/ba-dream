@@ -8,7 +8,7 @@ const session = require('express-session');
 // var fileStore = require('session-file-store')(session);
 
 const userRouter = require("./router/user.js"); // 유저 라우터
-const fileRouter = require("./router/files.js");   // 파일 라우터
+const fileRouter = require("./router/file.js");   // 파일 라우터
 
 const app = express();
 
