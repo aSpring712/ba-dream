@@ -2,7 +2,8 @@ const axios = require('axios');
 
 module.exports = {
     async uploadFiles(req, res) {
-        console.log('파일 업로드 req.query', req.body);
+        console.log('파일 업로드 req.query', req.query);
+        console.log('파일 업로드 req.query', req.files);
 
         // let { user_id } = req.body;
 
@@ -18,7 +19,7 @@ module.exports = {
         // req.session.save();
         // // console.log('req.session=========================', req.decode)
 
-        // return res.json( { type: 'SUCCESS', login_id: user_id});
+        return res.json( { type: 'SUCCESS'});
     },
     async allFiles(req, res) {
         console.log('전체 파일 조회');
