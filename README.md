@@ -1,4 +1,7 @@
 # ba_dream
+
+/login 페이지부터 봐주시면 됩니다.
+
 node version 16.17.0
 
 
