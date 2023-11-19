@@ -82,12 +82,24 @@ export const actions = {
         commit('addPlayist', payload);
         alert('플레이 리스트에 추가했습니다.')
     },
-    removePlaylist({ commit }, payload) {
-        commit('removePlayList', payload);
+    async removePlaylist({ commit }, payload) {
+        try {
+            // 실제 db에 저장된 고유 idx 넘겨야 함
+            let result = await this.$axios.delete(`/file/playlist/${payload}`)
+            console.log(result);
+
+            if(result.data.type == "SUCCESS") {
+                commit('removePlayList', payload);
+            }
+        } catch(err) {
+            console.log(err) 
+            alert('재생 목록에서 삭제하지 못했습니다.')
+        }
     },
     // 영구 삭제
     async delContent( {commit }, payload) {
         try {
+            // 실제 db에 저장된 고유 idx 넘겨야 함
             let result = await this.$axios.delete(`/file/${payload}`)
             console.log('payload ===>', payload)
             console.log('bbbbbbbbb', result)

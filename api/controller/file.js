@@ -95,5 +95,11 @@ module.exports = {
         console.log(req.params.id);
 
         return res.json({type: "SUCCESS"});
+    },
+    // 재생 목록에서 삭제
+    async removePlayList(req, res) {
+        console.log('재생목록에서 삭제 ==>', req.params);
+
+        return res.json({ type: "SUCCESS" });
     }
 }

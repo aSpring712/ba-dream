@@ -20,5 +20,7 @@ router.get('/playList', file.getPlayList);
 
 // 파일 영구 삭제
 router.delete('/:id', file.delFile);
+// 재생목록에서 삭제
+router.delete('/playlist/:id', file.removePlayList);
 
 module.exports = router;
