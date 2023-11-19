@@ -27,16 +27,16 @@
                 </div>
                 <br/>
                 <div style="height: 50%; min-height: fit-content; background-color: white; width: 100%;">
-                    전체 컨텐츠
+                    전체 컨텐츠(이미지/영상 클릭 시 전체 화면으로 재생됩니다)
                     <div style="display: flex; flex-flow: wrap; flex-direction: row;">
                         <div v-for="(file, index) in all_files">
                             <template v-if="!file.url.startsWith('blob')">
-                                <img v-if="file.type.startsWith('image')" :src="require('@/assets/' + file.url)" style="width: 300px; height: 300px;"/>
-                                <video controls v-else id="video" :src="require('@/assets/' + file.url)" style="width: 300px; height: 300px;"></video>
+                                <img v-if="file.type.startsWith('image')" :src="require('@/assets/' + file.url)" style="width: 300px; height: 300px;" :id="`content${index}`" @click="fullScreen(`content${index}`)" />
+                                <video controls v-else id="video" :src="require('@/assets/' + file.url)" style="width: 300px; height: 300px;" :id="`content${index}`" @click="fullScreen(`content${index}`)"></video>
                             </template>
                             <template v-else>
-                                <img v-if="file.type.startsWith('image')" :src="file.url" style="width: 300px; height: 300px;"/>
-                                <video controls v-else id="video" :src="file.url" style="width: 300px; height: 300px;"></video>
+                                <img v-if="file.type.startsWith('image')" :src="file.url" style="width: 300px; height: 300px;" :id="`content${index}`" @click="fullScreen(`content${index}`)"/>
+                                <video controls v-else id="video" :src="file.url" style="width: 300px; height: 300px;" :id="`content${index}`" @click="fullScreen(`content${index}`)"></video>
                             </template>
                             <div>TYPE {{ file.type.split('/')[0] }} <span style="color: red; cursor: pointer; float: right;" @click="tmpDelConfirm(file, index)">X</span></div>
                             <div>SIZE {{ file.size | fileSize }}</div>
@@ -57,12 +57,12 @@
                             <div style="color: white; position: absolute;">{{ index+1 }}</div>
                             <div style="display: flex;">
                                     <div v-if="!item.url.startsWith('blob')">
-                                        <img v-if="item.type.startsWith('image')" :id="`myContent${index}`" :src="require('@/assets/' + item.url)" style="width: 100px; height: 80px;"/>
-                                        <video controls v-else :id="`myContent${index}`" :src="require('@/assets/' + item.url)" style="width: 100px; height: 80px;"></video>
+                                        <img v-if="item.type.startsWith('image')" :id="`myContent${index}`" :src="require('@/assets/' + item.url)" style="width: 100px; height: 80px;" @click="nextScreen(index)"/>
+                                        <video v-else :id="`myContent${index}`" :src="require('@/assets/' + item.url)" style="width: 100px; height: 80px;" @click="nextScreen(index)"></video>
                                     </div>
                                     <div v-else>
-                                        <img v-if="item.type.startsWith('image')" :id="`myContent${index}`" :src="item.url" style="width: 100px; height: 80px;"/>
-                                        <video controls v-else :id="`myContent${index}`" :src="item.url" style="width: 100px; height: 80px;"></video>
+                                        <img v-if="item.type.startsWith('image')" :id="`myContent${index}`" :src="item.url" style="width: 100px; height: 80px;" @click="nextScreen(index)"/>
+                                        <video v-else :id="`myContent${index}`" :src="item.url" style="width: 100px; height: 80px;" @click="nextScreen(index)"></video>
                                     </div>
                                     <div>
                                         <div>{{ item.type.split('/')[0] }}</div>
@@ -245,14 +245,55 @@
             },
             // 재생
             playFullScreen() {
+                if(document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+
                 let playLength = this.play_list.length;
 
-                const elem = document.getElementById(`myContent0`);
+                if(playLength > 1) {
+                    this.fullScreen('myContent0')                
+                } else {
+                    alert('재생할 컨텐츠가 없습니다.')
+                }
 
-                if(elem.requestFullscreen) {
-                    elem.requestFullscreen();
+                // ! 10초 마다 실행하려고 했으나, 사용자의 조작 없이 script로 실행하는 것을 브라우저가 막는다고 함
+                // let self = this;
+                // for(let i=0; i < playLength; i++){
+                //     (function(x){
+                //         setTimeout(function(){
+                //             self.fullScreen(`myContent${x}`);
+                //         }, 10000*x);
+                //     })(i);
+                // }
+            },
+            // fullScreen 상태에서 이미지 클릭 시 다음 이미지로 전환됨
+            nextScreen(index) {
+
+                let playLength = this.play_list.length;
+                console.log('CLICK IMAGE ==>', index);
+                console.log('full screen인지 check하기')
+
+                if(document.fullscreenElement) {
+                    if(index == playLength-1) {
+                        // const el = document.getElementById(`mycontent${index}`);
+                        alert('마지막 컨텐츠입니다.')
+                        if(document.exitFullscreen) {
+                            document.exitFullscreen();
+                        }
+                    } else {
+                        this.fullScreen(`myContent${index+1}`)
+                    }
                 }
             },
+            fullScreen(event) {
+                console.log('===', event);
+                const el = document.getElementById(event);
+
+                if(el.requestFullscreen) {
+                    el.requestFullscreen();
+                }
+            }
         }
     }
 </script>
