@@ -29,6 +29,11 @@ export const mutations = {
         console.log('store add playlist', payload)
         state.playList.push(payload.file);
     },
+    // 플레이리스트에서 삭제
+    removePlayList(state, payload) {
+        console.log('store remove playlist');
+        state.playList.splice(payload, 1);
+    },
     // 영구 삭제
     delContent(state, payload) {
         state.trash.splice(payload, 1);
@@ -76,6 +81,9 @@ export const actions = {
     addPlaylist({ commit }, payload) {
         commit('addPlayist', payload);
         alert('플레이 리스트에 추가했습니다.')
+    },
+    removePlaylist({ commit }, payload) {
+        commit('removePlayList', payload);
     },
     // 영구 삭제
     async delContent( {commit }, payload) {

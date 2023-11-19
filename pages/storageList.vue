@@ -69,6 +69,7 @@
                                         <div>{{ item.type.split('/')[0] }}</div>
                                         <div>{{ item.size | fileSize }}</div>
                                         <div>{{ item.type.startsWith('video') ? $options.filters.convertDuration(item.duration) : "NONE" }}</div>
+                                        <button style="position: sticky; float: right;" @click="removePlayList(index)">X</button>
                                     </div>
                             </div>
                         </div>
@@ -251,8 +252,9 @@
                 }
 
                 let playLength = this.play_list.length;
+                console.log('LENGTH ==> ', playLength);
 
-                if(playLength > 1) {
+                if(playLength > 0) {
                     this.fullScreen('myContent0')                
                 } else {
                     alert('재생할 컨텐츠가 없습니다.')
@@ -294,8 +296,15 @@
                 if(el.requestFullscreen) {
                     el.requestFullscreen();
                 }
+            },
+            // 재생 목록에서 삭제
+            removePlayList(index) {
+                if(confirm('재생목록에서 삭제하시겠습니까?')) {
+                    console.log('YES!!!');
+                    this.$store.dispatch('removePlaylist', index)
+                }
             }
-        }
+        },
     }
 </script>
 
