@@ -51,6 +51,7 @@
             <!-- 우측 플레이 리스트 -->
             <div style="display: flex; background-color: green; width: 20%; height: 500px; overflow-y: scroll;">
                 <div style="display: flex; height: 30px; width: 100%; flex-direction: column; justify-content: space-between; padding: 12px;">플레이 리스트 <button style="display: contents; color: blue;" @click="playFullScreen">재생</button>
+                    (full screen 상태에서 컨텐츠를 클릭하면 다음 컨텐츠로 넘어갑니다.)
 
                     <div v-for="(item, index) in play_list" style="display: flex; flex-direction: column;">
                         <div style="width: 100%; height: 80px; background-color: gray; top: 30px;">
