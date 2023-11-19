@@ -1,4 +1,5 @@
 <template>
+    <!-- ! /login 페이지부터 봐주시면 됩니다. -->
     <v-row justify="center" align="center">
     <v-col cols="12" sm="8" md="6">
         <v-card>
@@ -21,6 +22,7 @@
 
 <script>
 export default {
+    layout: 'empty',
     name: 'IndexPage'
 }
 </script>

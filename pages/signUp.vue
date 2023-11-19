@@ -5,7 +5,7 @@
 
             <div>회원가입</div>
 
-            <!-- :rules="idRules" -->
+            <!-- 공백 불가, 5자 이상 10자 이하 -->
             <v-text-field
                 v-model="user_id"
                 :counter="10"
@@ -14,7 +14,7 @@
                 oninput="javascript: this.value = this.value.replace(/\s/g,'');"
             ></v-text-field>
 
-            <!-- :rules="telNumRules" -->
+            <!-- 숫자만 입력 -->
             <v-text-field
                 v-model="phone_num"
                 label="휴대폰 번호"
@@ -24,7 +24,7 @@
                 required
             ></v-text-field>
 
-            <!-- :rules="passwordRules" -->
+            <!-- 공백 불가, 8자 이상 입력 -->
             <v-text-field
                 v-model="password"
                 type="password"
@@ -33,7 +33,7 @@
                 required
             ></v-text-field>
 
-            <!-- :rules="passwordCheckRules" -->
+            <!-- 공백 불가 -->
             <v-text-field
                 v-model="passwordCheck"
                 type="password"
@@ -46,27 +46,25 @@
                 필수 약관 동의
             </div>
 
-            <!-- :rules="agreeRules" -->
             <v-checkbox
                 v-model="agree_1"
                 label="이용약관 동의"
                 required
             ></v-checkbox>
 
-            <!-- :rules="agreeRules" -->
             <v-checkbox
                 v-model="agree_2"
                 label="개인정보취급방침 동의"
                 required
             ></v-checkbox>
 
-            <!-- :rules="agreeRules" -->
             <v-checkbox
                 v-model="agree_3"
                 label="위치기반 서비스 이용약관 동의"
                 required
             ></v-checkbox>
 
+            <!-- 선택 -->
             <v-checkbox
                 v-model="agree_4"
                 label="이메일, SMS, 알림수신동의 (선택)"
@@ -82,7 +80,8 @@
                 회원가입
                 </v-btn>
             </div>
-            <a href="/login">로그인 페이지로 이동</a>
+            <br/>
+            <a href="/login" class="loginBtn">로그인 페이지로 이동</a>
         </v-form>
     </v-sheet>
 </template>
@@ -105,6 +104,7 @@
         },
         methods: {
             validate () {
+                // 전화번호 regex
                 const phoneCheck = /[0-9]{10,11}$/;
 
                 if(!this.user_id) {
@@ -148,13 +148,16 @@
             async submit() {
                 try {                    
                     if(confirm('회원가입 하시겠습니까?')) {
-
                         let pwd = this.encrypt(this.password);
 
-                        let result = await this.$axios.post('/user/signUp', { user_id: this.user_id, password: pwd, phone_num: this.phone_num, notice_agree: this.agree_4 })
-                        console.log('result ===>', result)
+                        // '선택' 동의 사항만 back으로 전송
+                        let result = await this.$axios.post('/user/signUp', { 
+                            user_id: this.user_id, password: pwd, phone_num: this.phone_num, notice_agree: this.agree_4 
+                        })
+
                         if(result.data.type == 'SUCCESS') {
                             alert('회원가입되었습니다.')
+                            // 로그인 페이지로 이동 처리
                             this.$router.push('/login');
                         } else {
                             alert('회원가입에 실패했습니다.')
@@ -189,5 +192,9 @@
         position: absolute;
         top: 10%;
         left: 45%;
+    }
+
+    .loginBtn{
+        text-decoration: none;    
     }
 </style>

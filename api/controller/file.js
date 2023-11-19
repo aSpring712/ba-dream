@@ -5,30 +5,82 @@ module.exports = {
         console.log('파일 업로드 req.query', req.query);
         console.log('파일 업로드 req.query', req.files);
 
-        // let { user_id } = req.body;
-
-        // if (!user_id) {
-        //     return res.json("FAIL");
-        // }
-
-        // const jwtToken = await jwt.sign(user_id);
-        // console.log('LOGIN CONTROLLER JWT TOKEN ==> ', jwtToken);
-        // res.cookie('token', jwtToken.token, {maxAge: 86400000, httpOnly: true}); // 1일 유지
-
-        // req.session.user_id = user_id;
-        // req.session.save();
-        // // console.log('req.session=========================', req.decode)
-
         return res.json( { type: 'SUCCESS'});
     },
     async moveToTrashcan(req, res) {
-        console.log('파일 휴지통으로 이동', req.params);
+        console.log(req.body);
+
+        return res.json({type: "SUCCESS"});
+    },
+    async addPlayList(req, res) {
+        console.log('ADD PLAY LIST ===>',);    
 
         return res.json({type: "SUCCESS"});
     },
     async allFiles(req, res) {
         console.log('전체 파일 조회');
-        return res.json([])
+
+        let data =  [{
+            url: 'ship.jpg',
+            type: 'image',
+            size: "4KB",
+            list: false,
+        },
+        {
+            url: 'book.jpg',
+            type: 'image',
+            size: "4KB",
+            list: true,
+        }]
+
+        return res.json({type: "SUCCESS", data})
+    },
+    async allTrash(req, res) {
+        console.log('휴지통 목록');
+
+        let data =  [{
+            url: 'vedio_tmp.jpg',
+            type: 'image',
+            size: "4KB",
+        }]
+
+        return res.json({type: "SUCCESS", data})
+    },
+    recentView(req, res) {
+        console.log('최근 재생된 컨텐츠 불러오기');
+
+        let data =  [{
+            url: 'card1.png',
+            type: 'image',
+            size: "4KB",
+        },
+        {
+            url: 'book.jpg',
+            type: 'image',
+            size: "4KB",
+        },
+        {
+            url: 'sun.jpg',
+            type: 'image',
+            size: "4KB",
+        }]
+
+        return res.json({type: "SUCCESS", data})
+    },
+    getPlayList(req, res) {
+        let data =  [
+        {
+            url: 'book.jpg',
+            type: 'image',
+            size: "4KB",
+        },
+        {
+            url: 'sun.jpg',
+            type: 'image',
+            size: "4KB",
+        }]
+
+        return res.json({type: "SUCCESS", data})
     },
     async delFile(req, res) {
         console.log(req.params.id);

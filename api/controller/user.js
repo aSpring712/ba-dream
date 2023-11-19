@@ -17,16 +17,13 @@ module.exports = {
 
         req.session.user_id = user_id;
         req.session.save();
-        // console.log('req.session=========================', req.decode)
 
         return res.json( { type: 'SUCCESS', login_id: user_id});
     },
+    // login 확인 및 user_id 넘겨주는 역할
     async userInfo(req, res) {
-        // if(!req.decode.user_id) return res.json({type:'fail'}); 
         if(!req.session.user_id) return res.json({type:'fail'}); 
-        // console.log('req.session=========================', req.decode)
-        console.log('REQ SESSION', req.session)
-        // const user_id = req.decode.user_id;
+        
         let user_id = req.session.user_id
         return res.json( { type: 'SUCCESS', user_id})
     },

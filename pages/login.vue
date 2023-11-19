@@ -62,8 +62,10 @@
         },
         async mounted() {
             try {
+                // 로그인 확인
                 let result = await this.$axios.get('/user/userInfo');
-                console.log('get people ==> ', result);
+                
+                // 로그인 된 상태면 storageList 페이지로 이동 처리
                 if(result.data.type == 'SUCCESS') {
                     this.$router.push('/storageList');
                 }
@@ -97,10 +99,10 @@
                 }
             },
             signUp() {
-                console.log('GO TO THE SIGN UP PAGE');
                 this.$router.push('/signUp');
             },
-            encrypt(pwd) { // 비밀번호 암호화해서 back단으로 넘기기
+            // 비밀번호 암호화해서 back단으로 넘기기
+            encrypt(pwd) {                 
                 const iv = crypto.randomBytes(16);
                 const key = this.$config.encKey;
                 const cipher = crypto.createCipheriv(

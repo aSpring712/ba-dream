@@ -27,7 +27,7 @@ export const mutations = {
     // 플레이리스트에 추가
     addPlayist(state, payload) {
         console.log('store add playlist', payload)
-        state.playList.push(payload);
+        state.playList.push(payload.file);
     },
     // 영구 삭제
     delContent(state, payload) {
@@ -36,6 +36,13 @@ export const mutations = {
     // content 저장
     loadContent(state, payload) {
         state.imgAndVedio = payload;
+    },
+    // 휴지통 저장
+    loadTrash(state, payload) {
+        state.trash = payload;
+    },
+    loadPlayList(state, payload) {
+        state.playList = payload;
     }
 }
 
@@ -53,10 +60,9 @@ export const actions = {
     },
     // 이미지/영상 삭제(휴지통으로 이동)
     async tmpDelContent({ commit }, payload) {
-        console.log('store ===> ', payload)
         try {
-            // 실제로는 idx 고유값 넘기기
-            let result = await this.$axios.post(`/file/${payload.index}`)
+            // 실제로는 파일의 고유값(idx) 넘기기
+            let result = await this.$axios.post(`/file/trash/${payload.index}`)
 
             if(result.data.type == "SUCCESS") {
                 commit('addTrash', payload);
@@ -69,6 +75,7 @@ export const actions = {
     // 플레이 리스트에 추가
     addPlaylist({ commit }, payload) {
         commit('addPlayist', payload);
+        alert('플레이 리스트에 추가했습니다.')
     },
     // 영구 삭제
     async delContent( {commit }, payload) {
@@ -89,5 +96,11 @@ export const actions = {
     },
     getAllContents( {commit}, payload ) {
         commit('loadContent', payload);
+    },
+    getAllTrash( {commit }, payload ) {
+        commit('loadTrash', payload);        
+    },
+    getPlayList( { commit }, payload ) {
+        commit('loadPlayList', payload);
     }
 }

@@ -5,74 +5,145 @@
             <span><button class="uploadBtn" @click="file_upload">이미지, 영상 업로드</button></span>
         </div>
 
-        <div style="display: flex; width: 100%; justify-content: space-between; padding: 10px;">
-            <!-- 좌측 최근 재생 된 컨텐츠 / 전체 컨텐츠 -->
-            <div style="display: flex; background-color: black; width: 80%; height: calc(100vh - 100px); margin-right: 40px; flex-direction: column; padding: 8px;">
-                <div style="height: 50%; background-color: white; width: 100%;">
+        <div class="section2">
+            <div class="s2_div">
+                <div class="recent_div">
                     최근 재생 된 컨텐츠(Carousel)
-                    <!-- Carousel -->
-                    <div>
-                        
+                    <div style="height: 100%; width: 100%;">
+                        <!-- Carousel -->
+                        <v-carousel 
+                            style="height: 95%; width: 100%;"
+                            :continuous="true"
+                            :show-arrows="false"
+                            delimiter-icon="mdi-square">
+                            <template v-for="item in recent_views">
+                                <v-carousel-item v-if="item.url"
+                                    :src="require('@/assets/' + item.url)"
+                                    cover
+                                ></v-carousel-item>
+                            </template>
+                        </v-carousel>
                     </div>
                 </div>
                 <br/>
-                <div style="height: 50%; background-color: white; width: 100%;">
+                <div style="height: 50%; min-height: fit-content; background-color: white; width: 100%;">
                     전체 컨텐츠
                     <div style="display: flex; flex-flow: wrap; flex-direction: row;">
                         <div v-for="(file, index) in all_files">
-                            <img v-if="file.type.startsWith('image')" :src="file.url" style="width: 300px; height: 300px;"/>
-                            <!-- <img v-else src="/vedio_temp.jpg" style="width: 300px; height: 300px;"/> -->
-                            <video v-else id="video" :src="file.url" style="width: 300px; height: 300px;"></video>
+                            <template v-if="!file.url.startsWith('blob')">
+                                <img v-if="file.type.startsWith('image')" :src="require('@/assets/' + file.url)" style="width: 300px; height: 300px;"/>
+                                <video controls v-else id="video" :src="require('@/assets/' + file.url)" style="width: 300px; height: 300px;"></video>
+                            </template>
+                            <template v-else>
+                                <img v-if="file.type.startsWith('image')" :src="file.url" style="width: 300px; height: 300px;"/>
+                                <video controls v-else id="video" :src="file.url" style="width: 300px; height: 300px;"></video>
+                            </template>
                             <div>TYPE {{ file.type.split('/')[0] }} <span style="color: red; cursor: pointer; float: right;" @click="tmpDelConfirm(file, index)">X</span></div>
                             <div>SIZE {{ file.size | fileSize }}</div>
-                            <!-- TODO 재생 시간 -->
-                            <div>TIME {{ file.type.startsWith('video') ? file.duration : "NONE" }}</div>
+                            <div>TIME {{ file.type.startsWith('video') ? $options.filters.convertDuration(file.duration) : "NONE" }}</div>
+                            <button v-if="!file.list" style="color: blue; float: left;" @click="addListConfirm(file, index)">추가</button>
+                            <div v-else style="color: black; float: left;">추가됨</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- 우측 플레이 리스트 -->
-            <div style="display: flex; background-color: green; width: 20%; height: 500px; flex-direction: column; overflow-y: scroll;">
-                <div style="display: flex; height: 20px; width: 100%; justify-content: space-between; padding: 12px;">플레이 리스트 <button>재생</button></div>
-                <template v-for="item in recent_play">
-                    <div style="width: 100%; height: 80px; background-color: gray; margin-top: 20px;">{{ item.id }}</div>
-                </template>
-            </div>
-        </div>
+            <div style="display: flex; background-color: green; width: 20%; height: 500px; overflow-y: scroll;">
+                <div style="display: flex; height: 30px; width: 100%; flex-direction: column; justify-content: space-between; padding: 12px;">플레이 리스트 <button style="display: contents; color: blue;" @click="playFullScreen">재생</button>
 
-        <input type="file" ref="fileInput" @change="change_file" single hidden accept="image/jpeg,image/gif,image/png,video/mp4,video/mkv,video/x-m4v,video/*">
+                    <div v-for="(item, index) in play_list" style="display: flex; flex-direction: column;">
+                        <div style="width: 100%; height: 80px; background-color: gray; top: 30px;">
+                            <div style="color: white; position: absolute;">{{ index+1 }}</div>
+                            <div style="display: flex;">
+                                    <div v-if="!item.url.startsWith('blob')">
+                                        <img v-if="item.type.startsWith('image')" :id="`myContent${index}`" :src="require('@/assets/' + item.url)" style="width: 100px; height: 80px;"/>
+                                        <video controls v-else :id="`myContent${index}`" :src="require('@/assets/' + item.url)" style="width: 100px; height: 80px;"></video>
+                                    </div>
+                                    <div v-else>
+                                        <img v-if="item.type.startsWith('image')" :id="`myContent${index}`" :src="item.url" style="width: 100px; height: 80px;"/>
+                                        <video controls v-else :id="`myContent${index}`" :src="item.url" style="width: 100px; height: 80px;"></video>
+                                    </div>
+                                    <div>
+                                        <div>{{ item.type.split('/')[0] }}</div>
+                                        <div>{{ item.size | fileSize }}</div>
+                                        <div>{{ item.type.startsWith('video') ? $options.filters.convertDuration(item.duration) : "NONE" }}</div>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="file" ref="fileInput" @change="change_file" single hidden accept="image/jpeg,image/gif,image/png,video/mp4,video/mkv,video/x-m4v,video/*">
+        </div>
     </div>
 </template>
 <script>
+    import getBlobDuration from 'get-blob-duration';
     export default {
         data() {
             return {
-                recent_play: [{id: 1}, {id: 2}],
                 // files: [],
 
                 // all_files: [],
+
+                recent_views: [],
             }
         },
         computed: {
             all_files() {
                 return this.$store.state.imgAndVedio
+            },
+            play_list() {
+                return this.$store.state.playList
             }
         },
         mounted() {
-            // 전체 파일 조회 -> 초기 데이터 없어서 페이지 이동 시마다 빈값으로 변경됨..
+            // 최근 재생 된 컨텐츠 조회
+            this.getRecentFiles();
+            // 전체 컨텐츠 조회
             this.getAllFiles();
+            // 플레이 리스트 조회
+            this.getPlayList();
         },
         methods: {
+            // 최근 재생 된 컨텐츠 조회
+            async getRecentFiles() {
+                try {
+                    let result = await this.$axios.get('/file/recentView')
+                    if(result.data.type == "SUCCESS") {
+                        // back단에서 데이터 받아 바인딩 하는 경우
+                        this.recent_views = result.data.data;
+                        console.log(this.recent_views);
+                    }
+                } catch(err) {
+                    console.log(err);
+                }
+            },
+            // 전체 컨텐츠 조회
             async getAllFiles() {
-                let result = await this.$axios.get('/file/all')
+                try {
+                    let result = await this.$axios.get('/file/all');
+                    if(result.data.type == "SUCCESS") {
+                        // this.all_files = result.data.files;
+                        this.$store.dispatch('getAllContents', result.data.data);
+                    } else {
+                        // 파일 조회 실패
+                        // this.all_files = [];
+                        this.$store.dispatch('getAllContents', []);
+                    }
+                } catch(err) {
+                    console.log(err);
+                }
+            },
+            // 플레이 리스트 조회
+            async getPlayList() {
+                let result = await this.$axios.get('/file/playList');
                 if(result.data.type == "SUCCESS") {
-                    // this.all_files = result.data.files;
-                    this.$store.dispatch('getAllContents', result.data.files);
+                    // back단에서 데이터 받아 바인딩 하는 경우
+                    this.$store.dispatch('getPlayList', result.data.data);
                 } else {
-                    // 파일 조회 실패
-                    // this.all_files = [];
-                    this.$store.dispatch('getAllContents', []);
+                    this.$store.dispatch('getPlayList', []);
                 }
             },
             file_upload() {
@@ -113,12 +184,20 @@
                     if(result.data.type == "SUCCESS") {
                         alert('업로드 되었습니다.');
 
+                        let blob = URL.createObjectURL(new_file)
+                        let duration = "NONE";
+                        if(new_file.type.startsWith("video")) {
+                            duration = await getBlobDuration(blob)
+                        }
+                        
+
+                        console.log('BLOB DURATION', duration);
+
                         this.$store.dispatch('addContent', {
-                            url: URL.createObjectURL(new_file),
+                            url: blob,
                             type: new_file.type,
                             size: new_file.size,
-                            reg_date: new Date(),
-                            del: false
+                            duration,
                         })
 
                         // this.all_files.push({
@@ -142,12 +221,43 @@
                 if(confirm('삭제하시겠습니까?')) {
                     this.$store.dispatch('tmpDelContent', {file, index});
                 }
-            }
+            },
+            // 재생목록에 추가
+            async addListConfirm(file, index) {
+                try {
+                    const formData = new FormData();
+
+                    formData.append('upload', file);
+
+                    // 실제로는 이미지/영상 db에 저장된 고유 idx만 넘기기
+                    let result = await this.$axios.post('/file/addPlayList', formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    })
+
+                    if(result.data.type == "SUCCESS") {
+                        this.$store.dispatch('addPlaylist', {file, index});
+                    }
+                } catch(err) {
+                    alert('재생목록 추가에 실패했습니다.')
+                }
+            },
+            // 재생
+            playFullScreen() {
+                let playLength = this.play_list.length;
+
+                const elem = document.getElementById(`myContent0`);
+
+                if(elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                }
+            },
         }
     }
 </script>
 
-<style>
+<style scss>
     .contents_container {
         display: absolute; 
         padding-top: 90px; 
@@ -158,5 +268,25 @@
         display: flex; width: 100%; 
         justify-content: space-between; 
         padding: 10px;
+    }
+    .section2 {
+        display: flex; 
+        width: 100%; 
+        justify-content: space-between; 
+        padding: 10px;
+    }
+    .s2_div {
+        display: flex; 
+        background-color: black; 
+        width: 80%; 
+        height: calc(100vh - 100px);
+        margin-right: 40px; 
+        flex-direction: column; 
+        padding: 8px;
+    }
+    .recent_div {
+        height: 50%; 
+        background-color: white; 
+        width: 100%;  
     }
 </style>
