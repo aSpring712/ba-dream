@@ -1,4 +1,10 @@
 # ba_dream
+node version 16.17.0
+
+.env
+ENC_KEY=v9y$B?E(H+MbQeThWmZq4t7w!z%C*F)J
+jwtSecret=BomiKwon712
+
 
 ## Build Setup
 
